@@ -53,7 +53,7 @@ To install WebODM manually on your machine:
 
 * From the Docker Quickstart Terminal or Git Bash (Windows), or from the command line (Mac / Linux), type:
 ```bash
-git clone https://github.com/OpenDroneMap/WebODM --config core.autocrlf=input --depth 1
+git clone https://github.com/Ali2814/WebODM.git
 cd WebODM
 ./webodm.sh start 
 ```
@@ -412,7 +412,7 @@ brew install postgres postgis
 Then these steps should be sufficient to get you up and running:
 
 ```bash
-git clone --depth 1 https://github.com/OpenDroneMap/WebODM
+git clone --depth 1 https://github.com/Ali2814/WebODM.git
 ```
 
 Create a `WebODM/webodm/local_settings.py` file containing your database settings:
