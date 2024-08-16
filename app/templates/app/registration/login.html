@@ -1,0 +1,110 @@
+{% extends 'registration/registration_base.html' %}
+{% load i18n static %}
+{% load settings %}
+
+{% block registration_content %}
+
+
+    {% is_single_user_mode as autologin %}
+    {% has_external_auth as ext_auth %}
+    {% reset_password_link as reset_pwd_link %}
+
+    {% if autologin %}
+        <script>location.href='/';</script>
+    {% else %}
+      <div style="display: flex; flex-direction: row; width: 100%; height: 100%;">
+        <div style="width: 60%; background-color: blue">
+            <img src="{% static 'images/Screenshot 2024-07-12 at 5.07.24 AM.png' %}" style="width: 100%; height: 100%;" alt="Logo">
+        </div>
+        <div style="width: 40%;display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div>
+                <img src="{% static 'images/73cc85ec5b07fd3676243df62c885fef.png' %}" alt="Logo">
+            </div>
+            <h2 style="margin:20px 0px ;">Login</h2>
+            <form id="loginForm" {% if ext_auth %} style="display: none" {% endif %} action="{% url 'login' %}" method="post" class="form-horizontal" role="form">{% csrf_token %}
+
+                {% for field in form %}
+                    {% include 'registration/form_field.html' %}
+                {% endfor %}
+                <input type="hidden" name="next" value="" id="loginNext" />
+                <script>
+                    var loginNext = document.getElementById("loginNext");
+                    var value = new URLSearchParams(new URL(window.location.href).search).get('next');
+                    if (value) loginNext.value = value;
+                </script>
+                    {% if form.errors %}
+                    <div class="alert alert-warning" style="color: red;">
+
+                        <p><strong>{% trans "Invalid credentials." %}</strong> </p>
+                        <p>{% trans "Note that both fields are case-sensitive." %}</p>
+                    </div>
+                {% endif %}
+                <div class="form-group" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-default col-sm-12" style="background: #013372;">{% trans 'Login' %}</button>
+                    </div>
+                    <div class="top-buffer">
+                        {% if reset_pwd_link != '' %}
+                        <p><a href="{{ reset_pwd_link }}">{% trans "Forgot your password?" %}</a></p>
+                        {% else %}
+                        <p><a href="javascript:toggleForgotPasswordHint();">{% trans "Forgot your password?" %}</a></p>
+                        <script>function toggleForgotPasswordHint(){ $("#forgotPasswordHint").toggle(); }</script>
+                        <div id="forgotPasswordHint" style="display: none; font-size: 90%; padding: 4px;" class="theme-secondary">
+                            You can reset the administrator password by running the following command:
+                            <span class="theme-background-highlight" style="padding: 4px; margin: 8px 0; display: inline-block;">./webodm.sh resetadminpassword yournewpass</span><br/>
+                            If you used WebODM Manager to launch WebODM, find the "Reset Password" button within the maintenance panel or within one of WebODM Manager menus.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+      </div>
+    {% if ext_auth %}
+    <div class="text-center" id="authLoading">
+        <i class="fa fa-spin fa-circle-notch fa-spin fa-fw fa-2x"></i>
+    </div>
+    <script>
+    function getAutoLoginCookie() {
+        var value = "; " + document.cookie;
+        var parts = value.split("; autologin=");
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    function delAutoLoginCookie() {
+        var domain = getAutoLoginCookie();
+        document.cookie = 'autologin=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Domain=' + domain + ';';
+    }
+    function showLoginForm(){
+        $("#authLoading").hide();
+        $("#loginForm").show();
+    }
+    $(function(){
+        if (getAutoLoginCookie() !== undefined){
+            $.ajax({
+                url: "/api/external-token-auth/",
+                type: "POST",
+                xhrFields: {
+                    withCredentials: true
+                },
+            }).done(function(res){
+                delAutoLoginCookie();
+                if (res.redirect){
+                    location.href = res.redirect;
+                }else{
+                    if (res.error) console.error(res.error);
+                    showLoginForm();
+                }
+            }).fail(function(){
+                delAutoLoginCookie();
+                showLoginForm();
+                console.error("Auto login failed");
+            });
+        }else{
+            showLoginForm();
+        }
+    });
+    </script>
+    {% endif %}
+
+    {% endif %}
+{% endblock %}

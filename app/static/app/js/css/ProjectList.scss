@@ -1,0 +1,13 @@
+.project-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    // height: 100lvh;
+    background-color: white;
+    border-radius: 10px;
+    ul.project-list.refreshing{
+        opacity: 0.5;
+        pointer-events: none;
+    }
+}

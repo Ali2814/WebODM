@@ -1,0 +1,249 @@
+.task-list-item {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  .row {
+    margin: 0;
+    padding: 4px;
+
+    .no-padding {
+      padding: 0;
+    }
+
+    &.no-padding {
+      padding: 0;
+    }
+  }
+
+  .name {
+    padding-left: 0;
+    margin-top: 4px;
+    .clickable {
+      margin-right: 5px;
+    }
+  }
+
+  .details {
+    font-size: 90%;
+    padding-right: 0;
+    margin-top: 7px;
+
+    i {
+      margin-left: 16px;
+      &:first-child {
+        margin-left: 4px;
+      }
+    }
+  }
+
+  .status-label {
+    padding: 4px;
+    padding-left: 8px;
+    width: 100%;
+    font-size: 90%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 2px;
+    margin-right: 16px;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    padding-right: 2px;
+  }
+
+  @media screen and (max-width: 576px) {
+    .status-label {
+      & > span {
+        display: none;
+      }
+      text-align: center;
+    }
+  }
+
+  .clickable:hover {
+    cursor: pointer;
+  }
+
+  .expanded-panel {
+    padding-top: 4px;
+    padding-bottom: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+
+    .info-table {
+      tr td:first-child {
+        width: 33%;
+        max-width: 150px;
+      }
+      td {
+        text-align: center;
+        padding: 4px;
+      }
+      margin-bottom: 12px;
+      @media screen and (min-width: 1200px) {
+        tr td:first-child {
+          width: 20%;
+          max-width: 150px;
+        }
+      }
+    }
+
+    .task-warning {
+      margin-top: 16px;
+      margin-bottom: 16px;
+
+      i.fa.fa-warning {
+        color: #ff8000;
+      }
+      span,
+      div {
+        font-size: 13px;
+      }
+      div.inline {
+        display: inline;
+      }
+      ul {
+        margin: 8px 0;
+      }
+    }
+
+    .action-buttons {
+      button {
+        margin-right: 4px;
+        margin-top: 4px;
+      }
+
+      .btn-group {
+        button:first-child {
+          margin-right: 0;
+        }
+      }
+
+      .edit-button {
+        margin-right: 0px;
+      }
+
+      .asset-download-buttons {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .inline-block {
+    display: inline-block;
+  }
+
+  .inline {
+    display: inline;
+  }
+
+  .mb {
+    margin-bottom: 12px;
+  }
+
+  .tag-badge.small-badge {
+    display: inline-block;
+    width: auto;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-left: 4px;
+    margin-top: -2px;
+    border-radius: 6px;
+    font-size: 90%;
+    position: relative;
+    top: -1px;
+  }
+
+  .name-link {
+    margin-right: 4px;
+  }
+  .project-list-grid,
+  .task-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-gap: 1rem;
+  }
+
+  .task-list-item.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+
+      .task-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .task-actions {
+        .task-action-button {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .card-body {
+      padding: 1rem;
+
+      .task-details {
+        margin-bottom: 1rem;
+
+        p {
+          margin: 0.5rem 0;
+          strong {
+            display: inline-block;
+            width: 150px;
+          }
+        }
+      }
+
+      .task-actions {
+        display: flex;
+        justify-content: space-between;
+
+        .btn {
+          flex: 1;
+          margin: 0 0.5rem;
+          &:first-child {
+            margin-left: 0;
+          }
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+
+        // .dropdown-menu {
+        //   min-width: 150px;
+        // }
+      }
+    }
+
+    .expanded-panel {
+      padding: 1rem;
+      background-color: #f0f0f0;
+      border-top: 1px solid #ccc;
+    }
+  }
+}
+.btnn{
+    color: black !important;
+    background: transparent !important;
+    border: none;
+}
