@@ -55,7 +55,8 @@ To install WebODM manually on your machine:
 ```bash
 git clone https://github.com/Ali2814/WebODM.git
 cd WebODM
-./webodm.sh start 
+git checkout master
+./webodm.sh start --dev
 ```
 * If you face any issues at the last step on Linux, make sure your user is part of the docker group:
 ```bash
