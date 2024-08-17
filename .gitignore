@@ -78,9 +78,6 @@ celerybeat-schedule.db
 celerybeat-schedule
 celerybeat.pid
 
-# dotenv
-.env
-
 # virtualenv
 venv/
 ENV/
