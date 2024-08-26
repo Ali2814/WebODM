@@ -46,6 +46,7 @@ class ProjectListItem extends Component {
       selectedTags: [],
       filterText: "",
       showDropdown: false,
+      role: "",
     };
 
     this.sortItems = [
@@ -57,7 +58,7 @@ class ProjectListItem extends Component {
 
   componentDidMount() {
     Dropzone.autoDiscover = false;
-
+    this.setState({ role: window.localStorage.getItem("role") });
     if (this.hasPermission("add")) {
       this.initializeDropzone();
     }
@@ -482,7 +483,7 @@ class ProjectListItem extends Component {
   };
 
   render() {
-    const { refreshing, data } = this.state;
+    const { refreshing, data, role } = this.state;
     const { onClick } = this.props;
 
     const numTasks = data.tasks.length;
@@ -533,15 +534,17 @@ class ProjectListItem extends Component {
                 alt="Project Image"
               />
             </a>
-            <button
-              type="button"
-              className="upload-button btn btn-primary btn-sm"
-              onClick={this.handleUpload}
-              ref={(domNode) => (this.uploadButton = domNode)}
-            >
-              <i className="glyphicon glyphicon-upload upload-icon"></i>
-              <span className="hidden-xs">Select Images and GCP</span>
-            </button>
+            {role === "adi" ? (
+              <button
+                type="button"
+                className="upload-button btn btn-primary btn-sm"
+                onClick={this.handleUpload}
+                ref={(domNode) => (this.uploadButton = domNode)}
+              >
+                <i className="glyphicon glyphicon-upload upload-icon"></i>
+                <span className="hidden-xs">Select Images and GCP</span>
+              </button>
+            ) : null}
           </div>
           <div className="card-details">
             <a href="javascript:void(0);" onClick={onClick}>
