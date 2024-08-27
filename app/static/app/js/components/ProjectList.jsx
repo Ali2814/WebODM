@@ -5,15 +5,17 @@ import "../css/ProjectList.scss";
 import ProjectListItem from "./ProjectListItem";
 import TaskList from "./TaskList"; // Import the TaskList here
 import Paginator from "./Paginator";
+import Paginated from "./Paginated";
 import ErrorMessage from "./ErrorMessage";
 import { _, interpolate } from "../classes/gettext";
 import PropTypes from "prop-types";
 import Utils from "../classes/Utils";
 import EditProjectDialog from "./EditProjectDialog";
 
-class ProjectList extends React.Component {
+class ProjectList extends Paginated {
   static propTypes = {
     history: PropTypes.object.isRequired,
+    addNewProjectp: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -26,6 +28,7 @@ class ProjectList extends React.Component {
       projects: [],
       selectedProject: null, // Track the selected project
       searchedText: "",
+      role: "",
     };
 
     this.PROJECTS_PER_PAGE = 10;
@@ -41,17 +44,41 @@ class ProjectList extends React.Component {
 
   componentDidMount() {
     this.refresh();
+    this.setState({ role: window.localStorage.getItem("role") });
   }
+  getParametersHash(source) {
+    if (!source) return "";
+    if (source.indexOf("?") === -1) return "";
 
+    let search = source.substr(source.indexOf("?"));
+    let q = Utils.queryParams({ search });
+
+    // All parameters that can change via history.push without
+    // triggering a reload of the project list should go here
+    delete q.project_task_open;
+    delete q.project_task_expanded;
+
+    return JSON.stringify(q);
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      this.getParametersHash(prevProps.source) !==
+      this.getParametersHash(this.props.source)
+    ) {
+      this.refresh();
+    }
+  }
   refresh() {
     this.setState({ refreshing: true });
 
+    // Load projects from API
     this.serverRequest = $.getJSON(this.props.source, (json) => {
       if (json.results) {
         this.setState({
           projects: json.results,
           loading: false,
         });
+        this.updatePagination(this.PROJECTS_PER_PAGE, json.count);
       } else {
         this.setState({
           error: interpolate(_("Invalid JSON response: %(error)s"), {
@@ -73,6 +100,9 @@ class ProjectList extends React.Component {
         this.setState({ refreshing: false });
       });
   }
+  onPageChanged(pageNum) {
+    this.refresh();
+  }
 
   handleSearchedText(text) {
     this.setState({ searchedText: text });
@@ -93,6 +123,9 @@ class ProjectList extends React.Component {
   handleDelete(projectId) {
     let projects = this.state.projects.filter((p) => p.id !== projectId);
     this.setState({ projects: projects });
+    this.handlePageItemsNumChange(-1, () => {
+      this.refresh();
+    });
   }
 
   handleAddProject() {
@@ -100,24 +133,18 @@ class ProjectList extends React.Component {
   }
 
   addNewProject(project) {
-    if (!project.name)
-      return new $.Deferred().reject(_("Name field is required"));
-
-    return $.ajax({
-      url: `/api/projects/`,
-      type: "POST",
-      contentType: "application/json",
-      data: JSON.stringify({
-        name: project.name,
-        description: project.descr,
-        tags: project.tags,
-      }),
-    }).done(() => {
-      this.projectList.refresh();
-    });
+    this.props
+      .addNewProjectp(project)
+      .done(() => {
+        console.log("Project added successfully!");
+        this.refresh();
+      })
+      .fail((error) => {
+        console.error("Error adding project:", error);
+      });
   }
   render() {
-    const { selectedProject } = this.state;
+    const { selectedProject, role } = this.state;
 
     if (this.state.loading) {
       return (
@@ -169,17 +196,18 @@ class ProjectList extends React.Component {
                 {this.state.projects.length} projects
               </h4>
             </div>
-            <div className="text-right add-button">
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={this.handleAddProject}
-              >
-                <i className="glyphicon glyphicon-plus"></i>
-                {_("Add Project")}
-              </button>
-            </div>
-
+            {role === "adi" ? (
+              <div className="text-right add-button">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={this.handleAddProject}
+                >
+                  <i className="glyphicon glyphicon-plus"></i>
+                  {_("Add Project")}
+                </button>
+              </div>
+            ) : null}
             <EditProjectDialog
               saveAction={this.addNewProject}
               ref={(domNode) => {

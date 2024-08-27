@@ -257,10 +257,17 @@ class Paginator extends React.Component {
       >
         {clearSearch}
         {toolbar}
-        {paginator}
+        {/* {paginator} */}
       </div>,
       this.props.children,
-      <div key="2" className="text-right paginator">
+      <div
+        key="2"
+        style={{
+          width: "-webkit-fill-available",
+          marginRight: "10px",
+        }}
+        className="text-right paginator"
+      >
         {paginator}
       </div>,
     ];

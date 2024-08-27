@@ -10,8 +10,26 @@ import { _ } from "./classes/gettext";
 class Dashboard extends React.Component {
   constructor() {
     super();
+    this.addNewProject = this.addNewProject.bind(this);
   }
 
+  addNewProject(project) {
+    if (!project.name)
+      return new $.Deferred().reject(_("Name field is required"));
+
+    return $.ajax({
+      url: `/api/projects/`,
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify({
+        name: project.name,
+        description: project.descr,
+        tags: project.tags,
+      }),
+    }).done(() => {
+      this.projectList.refresh();
+    });
+  }
   render() {
     const projectList = ({ location, history }) => {
       let q = Utils.queryParams(location);
@@ -27,6 +45,7 @@ class Dashboard extends React.Component {
           currentPage={q.page}
           currentSearch={q.search}
           history={history}
+          addNewProjectp={this.addNewProject} // Pass the function here
         />
       );
     };

@@ -36,11 +36,8 @@ class TaskListItem extends React.Component {
     this.historyNav = new HistoryNav(props.history);
 
     this.state = {
-      expanded: this.historyNav.isValueInQSList(
-        "project_task_expanded",
-        props.data.id,
-        true
-      ),
+      expanded: true, // Set expanded to true by default
+
       task: {},
       time: props.data.processing_time,
       actionError: "",
@@ -52,6 +49,7 @@ class TaskListItem extends React.Component {
       view: "basic",
       showMoveDialog: false,
       actionLoading: false,
+      role: "",
     };
 
     for (let k in props.data) {
@@ -125,6 +123,7 @@ class TaskListItem extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({ role: window.localStorage.getItem("role") });
     if (this.shouldRefresh())
       this.refreshTimeout = setTimeout(
         () => this.refresh(),
@@ -700,7 +699,7 @@ class TaskListItem extends React.Component {
                 onClick={button.onClick}
                 disabled={disabled}
               >
-                <i className={button.icon} style={{color:"#F7941E"}}></i>
+                <i className={button.icon} style={{ color: "#F7941E" }}></i>
                 <span className="hidden-xs">{button.label}</span>
               </button>
             );
@@ -709,11 +708,11 @@ class TaskListItem extends React.Component {
               buttonHtml = (
                 <button
                   type="button"
-                  className={"btnn btn-sm " }
+                  className={"btnn btn-sm "}
                   data-toggle="dropdown"
                   disabled={disabled}
                 >
-                  <i className={button.icon}  style={{color:"#F7941E"}}></i>
+                  <i className={button.icon} style={{ color: "#F7941E" }}></i>
                   {button.label}
                 </button>
               );
@@ -730,7 +729,6 @@ class TaskListItem extends React.Component {
                 }
               >
                 {buttonHtml}
-
               </div>
             );
           })}
@@ -850,9 +848,11 @@ class TaskListItem extends React.Component {
                     <td>
                       <strong>{_("Disk Usage:")}</strong>
                     </td>
-                    <td>
-                      <strong>{_("Task Output:")}</strong>
-                    </td>
+                    {this.state.role === "adi" ? (
+                      <td>
+                        <strong>{_("Task Output:")}</strong>
+                      </td>
+                    ) : null}
                   </tr>
                   <tr>
                     <td>
@@ -865,32 +865,34 @@ class TaskListItem extends React.Component {
                       {task.size > 0 &&
                         Utils.bytesToSize(task.size * 1024 * 1024)}
                     </td>
-                    <td>
-                      <div className="btn-group btn-toggle">
-                        <button
-                          onClick={this.setView("console")}
-                          className={
-                            "btn btn-xs " +
-                            (this.state.view === "basic"
-                              ? "btn-default"
-                              : "btn-primary")
-                          }
-                        >
-                          {_("On")}
-                        </button>
-                        <button
-                          onClick={this.setView("basic")}
-                          className={
-                            "btn btn-xs " +
-                            (this.state.view === "console"
-                              ? "btn-default"
-                              : "btn-primary")
-                          }
-                        >
-                          {_("Off")}
-                        </button>
-                      </div>
-                    </td>
+                    {this.state.role === "adi" ? (
+                      <td>
+                        <div className="btn-group btn-toggle">
+                          <button
+                            onClick={this.setView("console")}
+                            className={
+                              "btn btn-xs " +
+                              (this.state.view === "basic"
+                                ? "btn-default"
+                                : "btn-primary")
+                            }
+                          >
+                            {_("On")}
+                          </button>
+                          <button
+                            onClick={this.setView("basic")}
+                            className={
+                              "btn btn-xs " +
+                              (this.state.view === "console"
+                                ? "btn-default"
+                                : "btn-primary")
+                            }
+                          >
+                            {_("Off")}
+                          </button>
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                   {/* <tr>
                     <td>
@@ -925,7 +927,10 @@ class TaskListItem extends React.Component {
 
               {showOrthophotoMissingWarning ? (
                 <div className="task-warning">
-                  <i className="fa fa-exclamation-triangle" style={{color:"#F7941E"}}></i>{" "}
+                  <i
+                    className="fa fa-exclamation-triangle"
+                    style={{ color: "#F7941E" }}
+                  ></i>{" "}
                   <span>
                     {_(
                       "An orthophoto could not be generated. To generate one, make sure GPS information is embedded in the EXIF tags of your images, or use a Ground Control Points (GCP) file."
@@ -938,7 +943,7 @@ class TaskListItem extends React.Component {
 
               {showMemoryErrorWarning ? (
                 <div className="task-warning">
-                  <i className="fa fa-support" style={{color:"#F7941E"}}></i>{" "}
+                  <i className="fa fa-support" style={{ color: "#F7941E" }}></i>{" "}
                   <Trans
                     params={{
                       memlink: `<a href="${memoryErrorLink}" target='_blank'>${_(
@@ -960,7 +965,7 @@ class TaskListItem extends React.Component {
 
               {showTaskWarning ? (
                 <div className="task-warning">
-                  <i className="fa fa-support" style={{color:"#F7941E"}}></i>{" "}
+                  <i className="fa fa-support" style={{ color: "#F7941E" }}></i>{" "}
                   <span
                     dangerouslySetInnerHTML={{
                       __html: this.state.friendlyTaskError,
@@ -973,7 +978,10 @@ class TaskListItem extends React.Component {
 
               {showExitedWithCodeOneHints ? (
                 <div className="task-warning">
-                  <i className="fa fa-info-circle" style={{color:"#F7941E"}}></i>{" "}
+                  <i
+                    className="fa fa-info-circle"
+                    style={{ color: "#F7941E" }}
+                  ></i>{" "}
                   <div className="inline">
                     <Trans
                       params={{
@@ -1024,7 +1032,7 @@ class TaskListItem extends React.Component {
       taskActions.push(
         <li key={label}>
           <a href="javascript:void(0)" onClick={onClick}>
-            <i className={icon} style={{color:"#F7941E"}}></i>
+            <i className={icon} style={{ color: "#F7941E" }}></i>
             {label}
           </a>
         </li>
@@ -1054,7 +1062,10 @@ class TaskListItem extends React.Component {
       taskActions.push(
         <li key="edit">
           <a href="javascript:void(0)" onClick={this.startEditing}>
-            <i className="glyphicon glyphicon-pencil" style={{color:"#F7941E"}}></i>
+            <i
+              className="glyphicon glyphicon-pencil"
+              style={{ color: "#F7941E" }}
+            ></i>
             {_("Edit")}
           </a>
         </li>
@@ -1065,13 +1076,13 @@ class TaskListItem extends React.Component {
       taskActions.push(
         <li key="move">
           <a href="javascript:void(0)" onClick={this.handleMoveTask}>
-            <i className="fa fa-arrows-alt" style={{color:"#F7941E"}}></i>
+            <i className="fa fa-arrows-alt" style={{ color: "#F7941E" }}></i>
             {_("Move")}
           </a>
         </li>,
         <li key="duplicate">
           <a href="javascript:void(0)" onClick={this.handleDuplicateTask}>
-            <i className="fa fa-copy" style={{color:"#F7941E"}}></i>
+            <i className="fa fa-copy" style={{ color: "#F7941E" }}></i>
             {_("Duplicate")}
           </a>
         </li>
@@ -1103,7 +1114,7 @@ class TaskListItem extends React.Component {
     const userTags = Tags.userTags(task.tags);
 
     return (
-      <div style={{ width: "49%" }}>
+      <div style={{ width: "48%", margin: "1%" }}>
         <div
           style={{
             width: "100%",

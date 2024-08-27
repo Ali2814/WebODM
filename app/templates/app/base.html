@@ -165,6 +165,60 @@ $(function() {
 
 <!-- HTML content after body from theme settings -->
 {{ SETTINGS.theme.html_after_body|safe }}
+{% block head_extra %}
+<style>
+    #side-menu i {
+        transition: margin-right 0.3s ease, opacity 0.3s ease;
+        margin-right: 10px;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    #side-menu span, #side-menu li > a:not(#sidebar-toggle) {
+        transition: opacity 0.3s ease, display 0.3s ease;
+    }
+
+    #sidebar-toggle i {
+        font-size: 20px;
+    }
+    .rotate-icon {
+        transition: transform 0.3s ease; /* Smooth transition for rotation */
+    }
+
+    .rotated {
+        transform: rotate(180deg); /* Rotate the icon 90 degrees when active */
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const pageWrapper = document.getElementById('page-wrapper');
+    let sidebarCollapsed = false;
+
+    function toggleSidebar() {
+        sidebarCollapsed = !sidebarCollapsed;
+        
+        sidebar.style.width = sidebarCollapsed ? '50px' : '250px';
+        pageWrapper.style.marginLeft = sidebarCollapsed ? '50px' : '250px';
+        document.querySelectorAll('#side-menu span').forEach(el => el.style.display = sidebarCollapsed ? 'none' : 'inline');
+        document.querySelectorAll('#side-menu i').forEach(el => el.style.marginRight = sidebarCollapsed ? '0' : '10px');
+        let icon = document.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotated');            
+        }
+        document.querySelectorAll('.aaa').forEach(el => el.style.display = sidebarCollapsed ? 'none' : 'inline');
+        document.querySelectorAll('.navbar-collapse').style.width = sidebarCollapsed ? '50px' : '250px';
+    }
+
+    sidebarToggle.addEventListener('click', toggleSidebar);
+});
+window.localStorage.setItem('role', '{{ user.is_superuser|yesno:"adi,client" }}');
+</script>
+{% endblock %}
 
 </body>
 </html>
