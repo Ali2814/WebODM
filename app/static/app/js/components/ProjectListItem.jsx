@@ -58,10 +58,12 @@ class ProjectListItem extends Component {
 
   componentDidMount() {
     Dropzone.autoDiscover = false;
-    this.setState({ role: window.localStorage.getItem("role") });
-    if (this.hasPermission("add")) {
-      this.initializeDropzone();
-    }
+    this.setState({ role: window.localStorage.getItem("role") }, () => {
+      // Initialize Dropzone only after role is set
+      if (this.hasPermission("add")) {
+        this.initializeDropzone();
+      }
+    });
 
     PluginsAPI.Dashboard.triggerAddNewTaskButton(
       { projectId: this.state.data.id, onNewTaskAdded: this.newTaskAdded },
@@ -120,7 +122,7 @@ class ProjectListItem extends Component {
       acceptedFiles: "image/*,text/plain,.las,.laz,video/*,.srt",
       autoProcessQueue: false,
       createImageThumbnails: false,
-      clickable: this.uploadButton,
+      clickable: this.uploadButton, // Ensure this points to the button
       maxFilesize: 131072,
       chunkSize: 2147483647,
       timeout: 2147483647,
@@ -436,6 +438,7 @@ class ProjectListItem extends Component {
   handleCancelImportTask = () => {
     this.setState({ importing: false });
   };
+
   handleTaskTitleHint = async (hasGPSCallback) => {
     try {
       if (this.state.upload.files.length > 0) {
@@ -534,17 +537,17 @@ class ProjectListItem extends Component {
                 alt="Project Image"
               />
             </a>
-            {role === "adi" ? (
+            {role === "adi" && (
               <button
                 type="button"
                 className="upload-button btn btn-primary btn-sm"
-                onClick={this.handleUpload}
-                ref={(domNode) => (this.uploadButton = domNode)}
+                ref={(domNode) => (this.uploadButton = domNode)} // Bind ref for Dropzone
+                onClick={() => this.dz.hiddenFileInput.click()} // Manually trigger file input click
               >
                 <i className="glyphicon glyphicon-upload upload-icon"></i>
                 <span className="hidden-xs">Select Images and GCP</span>
               </button>
-            ) : null}
+            )}
           </div>
           <div className="card-details">
             <a href="javascript:void(0);" onClick={onClick}>
@@ -577,7 +580,7 @@ class ProjectListItem extends Component {
                       alignItems: "center",
                     }}
                   >
-                    <i class="fa fa-map" style={{ color: "#F7941E" }}></i>
+                    <i className="fa fa-map" style={{ color: "#F7941E" }}></i>
                     <button
                       className="view-map-button"
                       style={{ width: "max-content", marginLeft: "5px" }}
@@ -628,7 +631,7 @@ class ProjectListItem extends Component {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <i class="fa fa-ellipsis-v" style={{ color: "black" }}></i>
+                  <i className="fa fa-ellipsis-v" style={{ color: "black" }}></i>
                   {/* <span className="dropdown-icon">⋮</span> */}
                 </button>
                 <ul className="dropdown-menu dropdown-menu-right">
@@ -661,7 +664,7 @@ class ProjectListItem extends Component {
                         }}
                       >
                         <i
-                          class="fa fa-file-import"
+                          className="fa fa-file-import"
                           style={{ color: "#F7941E" }}
                         ></i>
                         Import
